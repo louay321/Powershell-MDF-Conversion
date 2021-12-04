@@ -1,3 +1,6 @@
+Function toRadian($Degree){
+	return $Degree * ([Math]::Pi / 180);
+}
 
 Function Convert-To-Triang(){
 	Param
@@ -30,19 +33,22 @@ $File | ForEach-Object{
 write-host 'MESHPOINT_COORDINATES old' $MeshpointCoordinates
 # Calculations by iterating over each element of coordinates array if rotation value exists
 if ($rotation -ne $Null -and $rotation -ne ''){
+	# since PowerShell uses the values as radian inside Math functions, i will convert it to Rad
 	$i=0
+  $rotation = toRadian($rotation)
 	while($i -lt $MeshpointCoordinates.Length - 2) { 
-		$val_X = $MeshpointCoordinates[$i] -as [double];
-  	$val_Y = $MeshpointCoordinates[$i + 1] -as [double];
+		$val_X = $MeshpointCoordinates[$i] -as [int];  
+  	$val_Y = $MeshpointCoordinates[$i + 1] -as [int];   
   	# Transform the X value
-  	$res_X = ( $val_X * [Math]::Cos($rotation) ) - ( $val_Y * [Math]::Sin($rotation) );
-		$MeshpointCoordinates[$i] = [math]::Round($res_X,2).toString()
-  	# Tranform the Y value
-  	$res_Y = ( $val_Y * [Math]::Cos($rotation) ) + ( $val_X * [Math]::Sin($rotation) );
-  	$MeshpointCoordinates[$i + 1] = [math]::Round($res_Y,2).toString()
+  	$res_X =  $val_X * [Math]::Cos($rotation) - $val_Y * [Math]::Sin($rotation);
+		$MeshpointCoordinates[$i] = [Math]::Round($res_X, 3)
+  	# Tranform the Y value 
+  	$res_Y =  $val_Y * [Math]::Cos($rotation) + $val_X * [Math]::Sin($rotation);
+  	$MeshpointCoordinates[$i + 1] = [Math]::Round($res_Y, 3)
   	$i+= 3;
   	}
  }
+ # Transform the NODES to TRIANG1
 
 write-host 'Title '$Title
 write-host 'NMESHPOINTS '$Nmeshpoints
@@ -61,5 +67,5 @@ write-host 'MATS ' $MaterialsQuad1 #this array will contain index and MAT type a
     # }
 }
 
-Convert-To-Triang -inputFilePath "inputPS.txt" -outputFile "outputPS.mdf" -rotation 90
+Convert-To-Triang -inputFilePath "input2.txt" -outputFile "outputPS.mdf" -rotation 45
 
