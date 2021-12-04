@@ -29,7 +29,7 @@ $File | ForEach-Object{
 #write-host 'coords length should be 18 and is : ' $MeshpointCoordinates.Length
 write-host 'MESHPOINT_COORDINATES old' $MeshpointCoordinates
 # Calculations by iterating over each element of coordinates array if rotation value exists
-if ($rotation -ne $Null -or $rotation -ne ''){
+if ($rotation -ne $Null -and $rotation -ne ''){
 	$i=0
 	while($i -lt $MeshpointCoordinates.Length - 2) { 
 		$val_X = $MeshpointCoordinates[$i] -as [double];
