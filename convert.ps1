@@ -1,13 +1,3 @@
-# this function will transform the coordinates by degrees and return the results
-Function RotateX(){
-	Param (
-  	[Parameter(Mandatory = $true)] [double] $rotation,
-    [Parameter(Mandatory = $true)] [string] $input_X
-  )
-  $input_X = $input_X -as [int] 
-  $res = [Math]::Cos($rotatin)
-}
-
 
 Function Convert-To-Triang(){
 	Param
@@ -34,29 +24,32 @@ $File | ForEach-Object{
   ElseIf ($_ -match 'NMATERIALS') { $Nmaterials = ($_ -split '  ')[1] }
   ElseIf ($_ -match $patternCoords) { $MeshpointCoordinates += $_.Substring(6, 15) -split'   '}
   ElseIf ($_ -match $patternNodes) { $NodesQuad1 += $_.Substring(6, 12).Trim() -split'  '}
-  ElseIf ($_ -match $patternMats) { $MaterialsQuad1 += $_.Trim() -split'   '
-  write-host $MaterialsQuad1}
+  ElseIf ($_ -match $patternMats) { $MaterialsQuad1 += $_.Trim() -split'   '}
 }
-
-# Calculations by iterating over each element of coordinates array
-$i=0
-while($i -lt $MeshpointCoordinates.Length - 1) { 
-	$val_X = $MeshpointCoordinates[$i] -as [int];
-  $val_Y = $MeshpointCoordinates[$i + 1] -as [int];
-  # Transform the X value
-  $MeshpointCoordinates[$i] = ( $val_X * [Math]::Cos($rotation) ) - ( $val_Y * [Math]::Sin($rotation) );
-  $i++;
-  # Tranform the Y value
-  $MeshpointCoordinates[$i] = ( $val_Y * [Math]::Cos($rotation) ) + ( $val_X * [Math]::Sin($rotation) );
-  $i+= 2;
-  }
+#write-host 'coords length should be 18 and is : ' $MeshpointCoordinates.Length
+write-host 'MESHPOINT_COORDINATES old' $MeshpointCoordinates
+# Calculations by iterating over each element of coordinates array if rotation value exists
+if ($rotation -ne $Null -or $rotation -ne ''){
+	$i=0
+	while($i -lt $MeshpointCoordinates.Length - 2) { 
+		$val_X = $MeshpointCoordinates[$i] -as [double];
+  	$val_Y = $MeshpointCoordinates[$i + 1] -as [double];
+  	# Transform the X value
+  	$res_X = ( $val_X * [Math]::Cos($rotation) ) - ( $val_Y * [Math]::Sin($rotation) );
+		$MeshpointCoordinates[$i] = [math]::Round($res_X,2).toString()
+  	# Tranform the Y value
+  	$res_Y = ( $val_Y * [Math]::Cos($rotation) ) + ( $val_X * [Math]::Sin($rotation) );
+  	$MeshpointCoordinates[$i + 1] = [math]::Round($res_Y,2).toString()
+  	$i+= 3;
+  	}
+ }
 
 write-host 'Title '$Title
 write-host 'NMESHPOINTS '$Nmeshpoints
 write-host 'NNODES '$Nnodes
 write-host 'NELEMENTS_QUAD1 '$Nelements_quad1
 write-host 'NMATERIALS '$Nmaterials
-write-host 'MESHPOINT_COORDINATES ' $MeshpointCoordinates
+write-host 'MESHPOINT_COORDINATES new' $MeshpointCoordinates
 write-host 'NODES_QUAD1' $NodesQuad1
 write-host 'MATS ' $MaterialsQuad1 #this array will contain index and MAT type after each other
 
