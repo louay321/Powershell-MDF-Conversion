@@ -20,7 +20,7 @@ $NodesQuad1 = @()
 
 # Data extraction and assigning to variables
 $File | ForEach-Object{
-  If ($_ -match 'TITLE') { $Title = ($_ -split '  ')[1] }
+	If ($_ -match 'TITLE') { $Title = ($_ -split '  ')[1] }
   ElseIf ($_ -match 'NMESHPOINTS') { $Nmeshpoints = ($_ -split '  ')[1] }
   ElseIf ($_ -match 'NNODES') { $Nnodes = ($_ -split '  ')[1] }
   ElseIf ($_ -match 'NELEMENTS_QUAD1') { $Nelements_quad1 = ($_ -split '  ')[1] }
@@ -35,13 +35,13 @@ write-host 'MESHPOINT_COORDINATES old' $MeshpointCoordinates
 if ($rotation -ne $Null -and $rotation -ne ''){
 	# since PowerShell uses the values as radian inside Math functions, i will convert it to Rad
 	$i=0
-  	$rotation = toRadian($rotation)
+  $rotation = toRadian($rotation)
 	while($i -lt $MeshpointCoordinates.Length - 2) { 
-	$val_X = $MeshpointCoordinates[$i] -as [int];  
+		$val_X = $MeshpointCoordinates[$i] -as [int];  
   	$val_Y = $MeshpointCoordinates[$i + 1] -as [int];   
   	# Transform the X value
   	$res_X =  $val_X * [Math]::Cos($rotation) - $val_Y * [Math]::Sin($rotation);
-	$MeshpointCoordinates[$i] = [Math]::Round($res_X, 3)
+		$MeshpointCoordinates[$i] = [Math]::Round($res_X, 3)
   	# Tranform the Y value 
   	$res_Y =  $val_Y * [Math]::Cos($rotation) + $val_X * [Math]::Sin($rotation);
   	$MeshpointCoordinates[$i + 1] = [Math]::Round($res_Y, 3)
@@ -49,14 +49,27 @@ if ($rotation -ne $Null -and $rotation -ne ''){
   	}
  }
  # Transform the NODES to TRIANG1
-
-write-host 'Title '$Title
+ 	$j = 3
+  $NODES_TRIANG1 = @()
+	while($j -lt $NodesQuad1.Length){
+  	$NODES_TRIANG1 += $NodesQuad1[$j]
+    $NODES_TRIANG1 += $NodesQuad1[$j - 3]
+    $NODES_TRIANG1 += $NodesQuad1[$j - 2]
+    $NODES_TRIANG1 += $NodesQuad1[$j]
+    $NODES_TRIANG1 += $NodesQuad1[$j - 2]
+    $NODES_TRIANG1 += $NodesQuad1[$j - 1]
+  	$j += 4
+  }
+  
+  
+write-host 'Title ' $
 write-host 'NMESHPOINTS '$Nmeshpoints
 write-host 'NNODES '$Nnodes
 write-host 'NELEMENTS_QUAD1 '$Nelements_quad1
 write-host 'NMATERIALS '$Nmaterials
 write-host 'MESHPOINT_COORDINATES new' $MeshpointCoordinates
 write-host 'NODES_QUAD1' $NodesQuad1
+write-host 'NODES_TRIANG1' $NODES_TRIANG1
 write-host 'MATS ' $MaterialsQuad1 #this array will contain index and MAT type after each other
 
  #check if output filename is not available
