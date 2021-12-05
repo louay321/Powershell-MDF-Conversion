@@ -66,6 +66,9 @@ $NELEMENTS_TRIANG1 = 'NELEMENTS_TRIANG1  ' + $NelementsTriang
 # Fix the 0 in Meshpoints to show 0.0 instead
 For ($i = 0 ; $i -le $MeshpointCoordinates.Length ; $i++){
 	If($MeshpointCoordinates[$i] -eq '0' -or $MeshpointCoordinates[$i] -eq 0){
+  # These 2 solutions below won't work properly so the conversion for now is only possible for 0
+  # If($MeshpointCoordinates[$i] -notmatch '\d\.\d'){
+  # $MeshpointCoordinates[$i].ToString("F1")
   	$MeshpointCoordinates[$i] = '0.0'
   }
 }
@@ -106,13 +109,19 @@ while($k -le $MaterialsQuad1.Length){
   write-host $mats
   $k++
 }
-
-# Check if output filename is available
-If(Get-Item -Path $outputFile -ErrorAction Ignore){Write-Host $outputFile "file already exists!"}
-Else{ # Otherwise proceed with the task 
-	#		New-Item -Verbose $outputFile -ItemType File
-  #   Write-Host -f Green $outputFile "file created successfully!"
-    # }
+$FilePath = './'+$outputFile
+# Create new file if exists overwrite it
+			New-Item -Path $FilePath -ItemType File -Force
+      $Title | Add-Content -Path $FilePath
+      '' | Add-Content -Path $FilePath
+      $Nmeshpoints | Add-Content -Path $FilePath
+			$Nnodes | Add-Content -Path $FilePath
+		  $NELEMENTS_TRIANG1 | Add-Content -Path $FilePath
+			$Nmaterials | Add-Content -Path $FilePath
+			'' | Add-Content -Path $FilePath
+      
+			Write-Host -f Green $outputFile "file created successfully!"
+}
 }
 
 Convert-To-Triang -inputFilePath "input_2.mdf" -outputFile "output_2.mdf" -rotation 45
