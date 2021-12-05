@@ -107,12 +107,12 @@ while($k -le $MaterialsQuad1.Length){
   $k++
 }
 
- #check if output filename is not available
-# if(Get-Item -Path $outputFile -ErrorAction Ignore){Write-Host $outputFile "file already exists!"}
-# else{ #proceed with the task 
+# Check if output filename is available
+If(Get-Item -Path $outputFile -ErrorAction Ignore){Write-Host $outputFile "file already exists!"}
+Else{ # Otherwise proceed with the task 
 	#		New-Item -Verbose $outputFile -ItemType File
   #   Write-Host -f Green $outputFile "file created successfully!"
     # }
 }
 
-Convert-To-Triang -inputFilePath "input_2.mdf" -outputFile "outputPS.mdf" -rotation 45
+Convert-To-Triang -inputFilePath "input_2.mdf" -outputFile "output_2.mdf" -rotation 45
