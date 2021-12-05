@@ -10,6 +10,7 @@ Function Convert-To-Triang(){
         [Parameter(Mandatory = $true)] [string] $outputFile
     )
 # Variables creation
+$Title = 'TITLE  "Rotated by ' + $rotation + ' degree"'
 $File = Get-Content $inputFilePath
 #Regex patterns to find values that are in table form
 $patternCoords = '\d.\d   \d.\d   \d.\d'
@@ -20,11 +21,11 @@ $NodesQuad1 = @()
 
 # Data extraction and assigning to variables
 $File | ForEach-Object{
-	If ($_ -match 'TITLE') { $Title = ($_ -split '  ')[1] }
-  ElseIf ($_ -match 'NMESHPOINTS') { $Nmeshpoints = ($_ -split '  ')[1] }
-  ElseIf ($_ -match 'NNODES') { $Nnodes = ($_ -split '  ')[1] }
+	If ($_ -match 'TITLE') { $In_Title = ($_ -split '  ')[1] }
+  ElseIf ($_ -match 'NMESHPOINTS') { $Nmeshpoints = 'NMESHPOINTS  ' + ($_ -split '  ')[1] }
+  ElseIf ($_ -match 'NNODES') { $Nnodes = 'NNODES  ' + ($_ -split '  ')[1] }
   ElseIf ($_ -match 'NELEMENTS_QUAD1') { $Nelements_quad1 = ($_ -split '  ')[1] }
-  ElseIf ($_ -match 'NMATERIALS') { $Nmaterials = ($_ -split '  ')[1] }
+  ElseIf ($_ -match 'NMATERIALS') { $Nmaterials ='NMATERIALS  ' +  ($_ -split '  ')[1] }
   ElseIf ($_ -match $patternCoords) { $MeshpointCoordinates += $_.Substring(6, 15) -split'   '}
   ElseIf ($_ -match $patternNodes) { $NodesQuad1 += $_.Substring(6, 12).Trim() -split'  '}
   ElseIf ($_ -match $patternMats) { $MaterialsQuad1 += $_.Trim() -split'   '}
@@ -48,6 +49,7 @@ if ($rotation -ne $Null -and $rotation -ne ''){
   	$i+= 3;
   	}
  }
+ else { $Title = 'TITLE  "conversion without rotation"'}
  # Transform the NODES to TRIANG1
  	$j = 3
   $NODES_TRIANG1 = @()
@@ -60,17 +62,30 @@ if ($rotation -ne $Null -and $rotation -ne ''){
     $NODES_TRIANG1 += $NodesQuad1[$j - 1]
   	$j += 4
   }
-  
-  
-write-host 'Title ' $
-write-host 'NMESHPOINTS '$Nmeshpoints
-write-host 'NNODES '$Nnodes
-write-host 'NELEMENTS_QUAD1 '$Nelements_quad1
-write-host 'NMATERIALS '$Nmaterials
-write-host 'MESHPOINT_COORDINATES new' $MeshpointCoordinates
-write-host 'NODES_QUAD1' $NodesQuad1
+#Add variables to the output file
+$NelementsTriang = ($Nelements_quad1 -as [int]) * 2
+$NELEMENTS_TRIANG1 = 'NELEMENTS_TRIANG1  ' + $NelementsTriang
+
+write-host $Title
+write-host ''
+write-host $Nmeshpoints
+write-host $Nnodes
+write-host $NELEMENTS_TRIANG1
+write-host $Nmaterials
+write-host ''
+write-host 'MESHPOINT_COORDINATES' $MeshpointCoordinates
+write-host ''
+write-host ''
 write-host 'NODES_TRIANG1' $NODES_TRIANG1
-write-host 'MATS ' $MaterialsQuad1 #this array will contain index and MAT type after each other
+write-host ''
+write-host ''
+write-host 'MATERIALS_TRIANG1'#this array will contain index and MAT type after each other
+$k = 0
+while($k -lt $MaterialsQuad1.Length){
+	$mats = '      ' + $k + '   ' + $MaterialsQuad1[1]
+  write-host $mats
+  $k++
+}
 
  #check if output filename is not available
 # if(Get-Item -Path $outputFile -ErrorAction Ignore){Write-Host $outputFile "file already exists!"}
@@ -80,5 +95,4 @@ write-host 'MATS ' $MaterialsQuad1 #this array will contain index and MAT type a
     # }
 }
 
-Convert-To-Triang -inputFilePath "input2.txt" -outputFile "outputPS.mdf" -rotation 45
-
+Convert-To-Triang -inputFilePath "input_2.mdf" -outputFile "outputPS.mdf" -rotation 45
