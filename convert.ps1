@@ -109,19 +109,53 @@ while($k -le $MaterialsQuad1.Length){
   write-host $mats
   $k++
 }
+
+# Data to put in file
 $FilePath = './'+$outputFile
+$space = ''
+$MESHPOINT = 'MESHPOINT_COORDINATES'
+$NODES = 'NODES_TRIANG1'
+$MATERIALS = 'MATERIALS_TRIANG1'
 # Create new file if exists overwrite it
-			New-Item -Path $FilePath -ItemType File -Force
-      $Title | Add-Content -Path $FilePath
-      '' | Add-Content -Path $FilePath
-      $Nmeshpoints | Add-Content -Path $FilePath
+		New-Item -Path $FilePath -ItemType File -Force
+      			$Title | Add-Content -Path $FilePath
+      			$space | Add-Content -Path $FilePath
+      			$Nmeshpoints | Add-Content -Path $FilePath
 			$Nnodes | Add-Content -Path $FilePath
-		  $NELEMENTS_TRIANG1 | Add-Content -Path $FilePath
+		  	$NELEMENTS_TRIANG1 | Add-Content -Path $FilePath
 			$Nmaterials | Add-Content -Path $FilePath
-			'' | Add-Content -Path $FilePath
-      
+			$space | Add-Content -Path $FilePath
+      			$MESHPOINT | Add-Content -Path $FilePath
+			$i = 0
+			$Line = 1
+			While($i -lt $MeshpointCoordinates.Length){
+				$PrintLine = '  ' + $Line + '   ' + $MeshpointCoordinates[$i] + '   ' + $MeshpointCoordinates[$i + 1] + '   ' + $MeshpointCoordinates[$i + 2]
+  			$PrintLine | Add-Content -Path $FilePath
+  			$Line++
+  			$i+= 3
+			}
+      			$space | Add-Content -Path $FilePath
+      			$space | Add-Content -Path $FilePath
+      			$NODES | Add-Content -Path $FilePath
+			$j = 0
+			$Line = 1
+			While($j -lt $NODES_TRIANG1.Length){
+				$PrintNodes = '  ' + $Line + '     ' + $NODES_TRIANG1[$j] + ' ' + $NODES_TRIANG1[$j +1] + ' ' +$NODES_TRIANG1[$j +2]
+  			$PrintNodes | Add-Content -Path $FilePath
+  			$j+= 3
+  			$Line++
+			}
+      			$space | Add-Content -Path $FilePath
+     			$space | Add-Content -Path $FilePath
+	      		$MATERIALS | Add-Content -Path $FilePath
+      			$k = 1
+			while($k -le $MaterialsQuad1.Length){
+				$mats = '      ' + $k + '   ' + $MaterialsQuad1[1]
+  			$mats | Add-Content -Path $FilePath
+  			$k++
+			}
 			Write-Host -f Green $outputFile "file created successfully!"
 }
-}
 
-Convert-To-Triang -inputFilePath "input_2.mdf" -outputFile "output_2.mdf" -rotation 45
+
+Convert-To-Triang -inputFilePath "input_2.mdf" -outputFile "output_2X.mdf" -rotation 45
