@@ -4,7 +4,7 @@ Function toRadian($Degree){
 
 Function Convert-To-Triang(){
 	Param
-    (   #parameters needed for the program, rotation is not mandatory
+    (   # Parameters needed for the program, rotation is not mandatory
         [Parameter(Mandatory = $true)] [string] $inputFilePath,
         [Parameter(Mandatory = $false)] [double] $rotation,
         [Parameter(Mandatory = $true)] [string] $outputFile
@@ -12,7 +12,7 @@ Function Convert-To-Triang(){
 # Variables creation
 $Title = 'TITLE  "Rotated by ' + $rotation + ' degree"'
 $File = Get-Content $inputFilePath
-#Regex patterns to find values that are in table form
+# Regex patterns to find values that are in table form
 $patternCoords = '\d.\d   \d.\d   \d.\d'
 $patternNodes = '\d  \d  \d  \d'
 $patternMats = '"\w*\d+"'
@@ -32,7 +32,7 @@ $File | ForEach-Object{
 }
 # Calculations by iterating over each element of coordinates array if rotation value exists
 if ($rotation -ne $Null -and $rotation -ne ''){
-	# since PowerShell uses the values as radian inside Math functions, i will convert it to Rad
+	# Since PowerShell uses the values as radian inside Math functions, i will convert it to Rad
 	$i=0
   $rotation = toRadian($rotation)
 	while($i -lt $MeshpointCoordinates.Length - 2) { 
@@ -60,10 +60,13 @@ if ($rotation -ne $Null -and $rotation -ne ''){
     $NODES_TRIANG1 += $NodesQuad1[$j - 1]
   	$j += 4
   }
-#Add variables to the output file
+# Add variables to the output file
 $NelementsTriang = ($Nelements_quad1 -as [int]) * 2
 $NELEMENTS_TRIANG1 = 'NELEMENTS_TRIANG1  ' + $NelementsTriang
-
+# Fix the 0 in Meshpoints to show 0.0 instead
+$i = 0
+for()
+# Print the data
 write-host $Title
 write-host ''
 write-host $Nmeshpoints
@@ -72,15 +75,28 @@ write-host $NELEMENTS_TRIANG1
 write-host $Nmaterials
 write-host ''
 write-host 'MESHPOINT_COORDINATES'
-$
-While
-Write-Host $MeshpointCoordinates
+$i = 0
+$Line = 1
+While($i -lt $MeshpointCoordinates.Length){
+	$PrintLine = '  ' + $Line + '   ' + $MeshpointCoordinates[$i] + '   ' + $MeshpointCoordinates[$i + 1] + '   ' + $MeshpointCoordinates[$i + 2]
+  Write-Host $PrintLine
+  $Line++
+  $i+= 3
+}
 write-host ''
 write-host ''
-write-host 'NODES_TRIANG1' $NODES_TRIANG1
+write-host 'NODES_TRIANG1'
+$j = 0
+$Line = 1
+While($j -lt $NODES_TRIANG1.Length){
+	$PrintNodes = '  ' + $Line + '     ' + $NODES_TRIANG1[$j] + ' ' + $NODES_TRIANG1[$j +1] + ' ' +$NODES_TRIANG1[$j +2]
+  Write-Host $PrintNodes
+  $j+= 3
+  $Line++
+}
 write-host ''
 write-host ''
-write-host 'MATERIALS_TRIANG1'#this array will contain index and MAT type after each other
+write-host 'MATERIALS_TRIANG1'
 $k = 1
 while($k -le $MaterialsQuad1.Length){
 	$mats = '      ' + $k + '   ' + $MaterialsQuad1[1]
