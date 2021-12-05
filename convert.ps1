@@ -64,8 +64,11 @@ if ($rotation -ne $Null -and $rotation -ne ''){
 $NelementsTriang = ($Nelements_quad1 -as [int]) * 2
 $NELEMENTS_TRIANG1 = 'NELEMENTS_TRIANG1  ' + $NelementsTriang
 # Fix the 0 in Meshpoints to show 0.0 instead
-$i = 0
-for()
+For ($i = 0 ; $i -le $MeshpointCoordinates.Length ; $i++){
+	If($MeshpointCoordinates[$i] -eq '0' -or $MeshpointCoordinates[$i] -eq 0){
+  	$MeshpointCoordinates[$i] = '0.0'
+  }
+}
 # Print the data
 write-host $Title
 write-host ''
