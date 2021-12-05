@@ -30,8 +30,6 @@ $File | ForEach-Object{
   ElseIf ($_ -match $patternNodes) { $NodesQuad1 += $_.Substring(6, 12).Trim() -split'  '}
   ElseIf ($_ -match $patternMats) { $MaterialsQuad1 += $_.Trim() -split'   '}
 }
-#write-host 'coords length should be 18 and is : ' $MeshpointCoordinates.Length
-write-host 'MESHPOINT_COORDINATES old' $MeshpointCoordinates
 # Calculations by iterating over each element of coordinates array if rotation value exists
 if ($rotation -ne $Null -and $rotation -ne ''){
 	# since PowerShell uses the values as radian inside Math functions, i will convert it to Rad
@@ -73,15 +71,18 @@ write-host $Nnodes
 write-host $NELEMENTS_TRIANG1
 write-host $Nmaterials
 write-host ''
-write-host 'MESHPOINT_COORDINATES' $MeshpointCoordinates
+write-host 'MESHPOINT_COORDINATES'
+$
+While
+Write-Host $MeshpointCoordinates
 write-host ''
 write-host ''
 write-host 'NODES_TRIANG1' $NODES_TRIANG1
 write-host ''
 write-host ''
 write-host 'MATERIALS_TRIANG1'#this array will contain index and MAT type after each other
-$k = 0
-while($k -lt $MaterialsQuad1.Length){
+$k = 1
+while($k -le $MaterialsQuad1.Length){
 	$mats = '      ' + $k + '   ' + $MaterialsQuad1[1]
   write-host $mats
   $k++
